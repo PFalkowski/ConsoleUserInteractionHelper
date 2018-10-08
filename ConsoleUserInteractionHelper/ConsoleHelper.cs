@@ -8,14 +8,43 @@ namespace ConsoleUserInteractionHelper
 {
     public static class ConsoleHelper
     {
-        public static string GetPathFromUser(string requiredFileExtension = null)
+        public static string GetNonEmptyStringFromUser()
         {
-            string userInput;
+            string userInput = Console.ReadLine();
+            while (string.IsNullOrEmpty(userInput))
+            {
+                Console.WriteLine("Input cannot be empty. Please enter non-empty string:");
+                userInput = Console.ReadLine();
+            }
+
+            return userInput;
+        }
+        public static string GetPathToExistingFileFromUser(string requiredFileExtension = null)
+        {
+            string userInput = "";
             var inputNullOrWhiteSpace = false;
             var fileExists = false;
             var extensionMatches = false;
+            var shown = false;
             do
             {
+                if (shown)
+                {
+                    string prompt = "";
+                    if (inputNullOrWhiteSpace)
+                    {
+                        prompt = "Empty path provided. Path to file cannot be empty.";
+                    }
+                    else if (!fileExists)
+                    {
+                        prompt = $"Invalid file path provided. File {userInput} does not exist. Create the file or point to existing one.";
+                    }
+                    else if (requiredFileExtension != null && !extensionMatches)
+                    {
+                        prompt = $"Wrong extension. Expected file of type {requiredFileExtension}. Ponit to the file of type {requiredFileExtension}.";
+                    }
+                    Console.WriteLine(prompt);
+                }
                 userInput = Console.ReadLine();
                 inputNullOrWhiteSpace = string.IsNullOrWhiteSpace(userInput);
                 if (!inputNullOrWhiteSpace)
@@ -25,6 +54,7 @@ namespace ConsoleUserInteractionHelper
                         extensionMatches = userInput.EndsWith(requiredFileExtension,
                             StringComparison.InvariantCultureIgnoreCase);
                 }
+                shown = true;
             } while (inputNullOrWhiteSpace || !fileExists || (requiredFileExtension != null && !extensionMatches));
 
             return userInput;
