@@ -41,7 +41,7 @@ namespace ConsoleUserInteractionHelper
                     }
                     else if (requiredFileExtension != null && !extensionMatches)
                     {
-                        prompt = $"Wrong extension. Expected file of type {requiredFileExtension}. Ponit to the file of type {requiredFileExtension}.";
+                        prompt = $"Wrong extension. Expected file of type {requiredFileExtension}. Point to the file of type {requiredFileExtension}.";
                     }
                     Console.WriteLine(prompt);
                 }
@@ -153,7 +153,6 @@ namespace ConsoleUserInteractionHelper
 
         public static DateTime GetDateFromUser()
         {
-            
             var line = Console.ReadLine();
             DateTime result;
             while (!DateTime.TryParse(line, out result))
