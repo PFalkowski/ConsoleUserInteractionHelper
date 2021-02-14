@@ -3,16 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Copyright>Piotr Falkowski © 2018</Copyright>
+    <Copyright>Piotr Falkowski © 2021</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</PackageProjectUrl>
     <PackageId>ConsoleUserInteractionHelper</PackageId>
     <RepositoryUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Console,Input-Output,helper</PackageTags>
-    <PackageReleaseNotes>Change name of GetPathToFileFromUser to GetPathTo*Existing*FileFromUser. Add GetNonEmptyStringFromUser method.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add GetDateFromUser method</PackageReleaseNotes>
     <Description>Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser. Also, ShowSpinnerUntilConditionTrue to show spinner progress controll in console.</Description>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
   </PropertyGroup>
 
 </Project>

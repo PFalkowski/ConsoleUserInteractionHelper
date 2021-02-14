@@ -150,5 +150,19 @@ namespace ConsoleUserInteractionHelper
             }
             return validInteger;
         }
+
+        public static DateTime GetDateFromUser()
+        {
+            
+            var line = Console.ReadLine();
+            DateTime result;
+            while (!DateTime.TryParse(line, out result))
+            {
+                Console.WriteLine(
+                    $"There was a problem with your input: {line} is not a valid Date in this context.");
+                line = Console.ReadLine();
+            }
+            return result;
+        }
     }
 }
