@@ -10,9 +10,14 @@
     <RepositoryUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Console,Input-Output,helper</PackageTags>
-    <PackageReleaseNotes>Add GetDateFromUser method</PackageReleaseNotes>
+    <PackageReleaseNotes>Add ConsoleProgressReporter</PackageReleaseNotes>
     <Description>Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser. Also, ShowSpinnerUntilConditionTrue to show spinner progress controll in console.</Description>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Goblinfactory.Konsole" Version="6.2.1" />
+    <PackageReference Include="ProgressReporting" Version="2.0.0" />
+  </ItemGroup>
 
 </Project>
