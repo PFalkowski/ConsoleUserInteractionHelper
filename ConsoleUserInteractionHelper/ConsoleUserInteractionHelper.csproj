@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Piotr Falkowski © 2021</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</PackageProjectUrl>
     <PackageId>ConsoleUserInteractionHelper</PackageId>
     <RepositoryUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</RepositoryUrl>
@@ -13,6 +13,7 @@
     <PackageReleaseNotes>Add ConsoleProgressReporter</PackageReleaseNotes>
     <Description>Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser. Also, ShowSpinnerUntilConditionTrue to show spinner progress controll in console.</Description>
     <Version>2.2.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
