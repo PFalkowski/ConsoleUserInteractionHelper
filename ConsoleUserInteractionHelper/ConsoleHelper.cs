@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ConsoleUserInteractionHelper
 {
-    public static class ConsoleHelper
+    public class ConsoleHelper : IConsoleHelper
     {
-        public static string GetNonEmptyStringFromUser()
+        public string GetNonEmptyStringFromUser()
         {
             string userInput = Console.ReadLine();
             while (string.IsNullOrEmpty(userInput))
@@ -19,7 +19,7 @@ namespace ConsoleUserInteractionHelper
 
             return userInput;
         }
-        public static string GetPathToExistingFileFromUser(string requiredFileExtension = null)
+        public string GetPathToExistingFileFromUser(string requiredFileExtension = null)
         {
             string userInput = "";
             var inputNullOrWhiteSpace = false;
@@ -39,10 +39,11 @@ namespace ConsoleUserInteractionHelper
                     {
                         prompt = $"Invalid file path provided. File {userInput} does not exist. Create the file or point to existing one.";
                     }
-                    else if (requiredFileExtension != null && !extensionMatches)
+                    else
                     {
                         prompt = $"Wrong extension. Expected file of type {requiredFileExtension}. Point to the file of type {requiredFileExtension}.";
                     }
+
                     Console.WriteLine(prompt);
                 }
                 userInput = Console.ReadLine();
@@ -60,7 +61,7 @@ namespace ConsoleUserInteractionHelper
             return userInput;
         }
 
-        public static TimeSpan ShowSpinnerUntilConditionTrue(Func<bool> condition)
+        public TimeSpan ShowSpinnerUntilConditionTrue(Func<bool> condition)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
 
@@ -97,17 +98,17 @@ namespace ConsoleUserInteractionHelper
             return watch.Elapsed;
         }
 
-        public static TimeSpan ShowSpinnerUntilTaskIsRunning(Task task)
+        public TimeSpan ShowSpinnerUntilTaskIsRunning(Task task)
         {
             return ShowSpinnerUntilConditionTrue(() => !task.GetAwaiter().IsCompleted);
         }
 
-        public static TimeSpan ShowSpinnerUntilTaskIsRunning<T>(Task<T> task)
+        public TimeSpan ShowSpinnerUntilTaskIsRunning<T>(Task<T> task)
         {
             return ShowSpinnerUntilConditionTrue(() => !task.GetAwaiter().IsCompleted);
         }
 
-        public static void ClearCurrentConsoleLine()
+        public void ClearCurrentConsoleLine()
         {
             var currentLineCursor = Console.CursorTop;
             Console.SetCursorPosition(0, Console.CursorTop);
@@ -115,7 +116,7 @@ namespace ConsoleUserInteractionHelper
             Console.SetCursorPosition(0, currentLineCursor);
         }
 
-        public static bool GetBinaryDecisionFromUser()
+        public bool GetBinaryDecisionFromUser()
         {
             bool? response = null;
             while (response == null)
@@ -137,7 +138,7 @@ namespace ConsoleUserInteractionHelper
             return response.Value;
         }
 
-        public static int GetNaturalInt()
+        public int GetNaturalInt()
         {
             var line = Console.ReadLine();
             int validInteger;
@@ -151,7 +152,7 @@ namespace ConsoleUserInteractionHelper
             return validInteger;
         }
 
-        public static DateTime GetDateFromUser()
+        public DateTime GetDateFromUser()
         {
             var line = Console.ReadLine();
             DateTime result;

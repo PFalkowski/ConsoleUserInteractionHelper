@@ -21,7 +21,7 @@ namespace ConsoleUserInteractionHelper
 
         public override void ReportProgress(double rawProgressValue)
         {
-            _progressBar.Refresh((int)rawProgressValue, $"Remaining {RemainingTimeEstimate:g}");
+            _progressBar.Refresh((int)rawProgressValue, $"Remaining {RemainingTimeEstimate:hh:mm:ss}");
             base.ReportProgress(rawProgressValue);
         }
     }
