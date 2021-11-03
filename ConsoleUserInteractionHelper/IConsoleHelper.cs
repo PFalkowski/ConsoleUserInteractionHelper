@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace ConsoleUserInteractionHelper
@@ -14,5 +15,6 @@ namespace ConsoleUserInteractionHelper
         bool GetBinaryDecisionFromUser();
         int GetNaturalInt();
         DateTime GetDateFromUser();
+        SecureString GetSecureStringFromUser();
     }
 }

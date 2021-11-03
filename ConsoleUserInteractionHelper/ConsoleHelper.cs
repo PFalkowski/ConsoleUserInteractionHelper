@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -162,6 +163,28 @@ namespace ConsoleUserInteractionHelper
                     $"There was a problem with your input: {line} is not a valid Date in this context.");
                 line = Console.ReadLine();
             }
+            return result;
+        }
+
+        public SecureString GetSecureStringFromUser()
+        {
+            var result = new SecureString();
+            ConsoleKeyInfo key;
+            do
+            {
+                key = Console.ReadKey(true);
+
+                // Ignore any key out of range.
+                if (!Char.IsControl(key.KeyChar) && !Char.IsWhiteSpace(key.KeyChar))
+                {
+                    // Append the character to the password.
+                    result.AppendChar(key.KeyChar);
+                    Console.Write("*");
+                }
+                // Exit if Enter key is pressed.
+            } while (key.Key != ConsoleKey.Enter);
+            Console.WriteLine();
+
             return result;
         }
     }
