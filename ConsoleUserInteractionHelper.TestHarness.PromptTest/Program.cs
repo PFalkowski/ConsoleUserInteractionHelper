@@ -10,6 +10,8 @@ namespace ConsoleUserInteractionHelper.TestHarness.PromptTest
         {
             Console.WriteLine("Hello World!");
             var helper = new ConsoleHelper();
+            var secretString = helper.GetSecretStringFromUser();
+            Console.WriteLine(secretString);
 
             var secureString = helper.GetSecureStringFromUser();
             Console.WriteLine(SecureStringToString(secureString));

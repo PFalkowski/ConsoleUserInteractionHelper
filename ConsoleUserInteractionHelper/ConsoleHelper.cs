@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -186,6 +187,28 @@ namespace ConsoleUserInteractionHelper
             Console.WriteLine();
 
             return result;
+        }
+
+        public string GetSecretStringFromUser()
+        {
+            var result = new StringBuilder();
+            ConsoleKeyInfo key;
+            do
+            {
+                key = Console.ReadKey(true);
+
+                // Ignore any key out of range.
+                if (!Char.IsControl(key.KeyChar) && !Char.IsWhiteSpace(key.KeyChar))
+                {
+                    // Append the character to the password.
+                    result.Append(key.KeyChar);
+                    Console.Write("*");
+                }
+                // Exit if Enter key is pressed.
+            } while (key.Key != ConsoleKey.Enter);
+            Console.WriteLine();
+
+            return result.ToString();
         }
     }
 }
