@@ -12,7 +12,7 @@
     <PackageTags>Console,Input-Output,helper</PackageTags>
     <PackageReleaseNotes>Fix bug "string is not in correct format" when calling ConsoleProgressReporter for the first time</PackageReleaseNotes>
     <Description>Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser. Also, ShowSpinnerUntilConditionTrue to show spinner progress controll in console.</Description>
-    <Version>3.2.2</Version>
+    <Version>3.2.3</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
