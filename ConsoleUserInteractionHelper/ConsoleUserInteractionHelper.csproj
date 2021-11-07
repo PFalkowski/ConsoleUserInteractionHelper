@@ -10,15 +10,15 @@
     <RepositoryUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Console,Input-Output,helper</PackageTags>
-    <PackageReleaseNotes>GetSecureStringFromUser</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix bug "string is not in correct format" when calling ConsoleProgressReporter for the first time</PackageReleaseNotes>
     <Description>Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser. Also, ShowSpinnerUntilConditionTrue to show spinner progress controll in console.</Description>
-    <Version>3.1.0</Version>
+    <Version>3.2.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Goblinfactory.Konsole" Version="6.2.2" />
-    <PackageReference Include="ProgressReporting" Version="2.0.0" />
+    <PackageReference Include="ProgressReporting" Version="2.0.1" />
   </ItemGroup>
 
 </Project>

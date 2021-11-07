@@ -16,5 +16,6 @@ namespace ConsoleUserInteractionHelper
         int GetNaturalInt();
         DateTime GetDateFromUser();
         SecureString GetSecureStringFromUser();
+        string GetSecretStringFromUser();
     }
 }
