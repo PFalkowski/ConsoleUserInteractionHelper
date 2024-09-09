@@ -12,7 +12,7 @@ namespace ConsoleUserInteractionHelper
     {
         public string GetNonEmptyStringFromUser()
         {
-            string userInput = Console.ReadLine();
+            var userInput = Console.ReadLine();
             while (string.IsNullOrEmpty(userInput))
             {
                 Console.WriteLine("Input cannot be empty. Please enter non-empty string:");
@@ -21,9 +21,10 @@ namespace ConsoleUserInteractionHelper
 
             return userInput;
         }
+
         public string GetPathToExistingFileFromUser(string requiredFileExtension = null)
         {
-            string userInput = "";
+            var userInput = "";
             var inputNullOrWhiteSpace = false;
             var fileExists = false;
             var extensionMatches = false;
@@ -32,7 +33,7 @@ namespace ConsoleUserInteractionHelper
             {
                 if (shown)
                 {
-                    string prompt = "";
+                    var prompt = "";
                     if (inputNullOrWhiteSpace)
                     {
                         prompt = "Empty path provided. Path to file cannot be empty.";
@@ -126,9 +127,11 @@ namespace ConsoleUserInteractionHelper
                 var key = Console.ReadKey();
                 switch (key.Key)
                 {
+                    case ConsoleKey.NumPad0:
                     case ConsoleKey.N:
                         response = false;
                         break;
+                    case ConsoleKey.NumPad1:
                     case ConsoleKey.Y:
                         response = true;
                         break;
@@ -140,7 +143,7 @@ namespace ConsoleUserInteractionHelper
             return response.Value;
         }
 
-        public int GetNaturalInt()
+        public int GetPositiveInt()
         {
             var line = Console.ReadLine();
             int validInteger;
@@ -148,6 +151,25 @@ namespace ConsoleUserInteractionHelper
             {
                 Console.WriteLine(
                     $"There was a problem with your input: {line} is not a valid integer in this context. Enter any natural number greater than 0.");
+                Console.Write("Number of messages: ");
+                line = Console.ReadLine();
+            }
+            return validInteger;
+        }
+
+        public int GetNaturalInt()
+        {
+            return GetPositiveInt();
+        }
+
+        public int GetInt()
+        {
+            var line = Console.ReadLine();
+            int validInteger;
+            while (!int.TryParse(line, out validInteger))
+            {
+                Console.WriteLine(
+                    $"There was a problem with your input: {line} is not a valid integer in this context. Enter any natural number in range [{int.MinValue},{int.MaxValue}].");
                 Console.Write("Number of messages: ");
                 line = Console.ReadLine();
             }
