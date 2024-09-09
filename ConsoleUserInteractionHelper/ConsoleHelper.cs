@@ -8,109 +8,143 @@ using System.Threading.Tasks;
 
 namespace ConsoleUserInteractionHelper
 {
+    /// <summary>
+    /// Provides helper methods for console-based user interactions.
+    /// </summary>
     public class ConsoleHelper : IConsoleHelper
     {
-        public string GetNonEmptyStringFromUser()
+        private static readonly char[] SpinnerChars = { '|', '/', '-', '\\' };
+        private const int SpinnerDelay = 200;
+
+        /// <summary>
+        /// Gets a non-empty string from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A non-empty string entered by the user.</returns>
+        public string GetNonEmptyStringFromUser(int? maxRetries = null)
         {
-            var userInput = Console.ReadLine();
-            while (string.IsNullOrEmpty(userInput))
+            var attemptCount = 0;
+            while (maxRetries == null || attemptCount < maxRetries.Value)
             {
-                Console.WriteLine("Input cannot be empty. Please enter non-empty string:");
-                userInput = Console.ReadLine();
+                var userInput = Console.ReadLine();
+                if (!string.IsNullOrEmpty(userInput))
+                {
+                    return userInput;
+                }
+                Console.WriteLine($"Input cannot be empty. Please enter a non-empty string{GetAttemptMessage(attemptCount, maxRetries)}:");
+                attemptCount++;
             }
-
-            return userInput;
+            throw new InvalidOperationException("Max retries reached. Unable to get non-empty input.");
         }
 
-        public string GetPathToExistingFileFromUser(string requiredFileExtension = null)
+        /// <summary>
+        /// Gets a path to an existing file from the user, optionally with a specific extension.
+        /// </summary>
+        /// <param name="requiredFileExtension">The required file extension (optional).</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A valid path to an existing file.</returns>
+        public string GetPathToExistingFileFromUser(string requiredFileExtension = null, int? maxRetries = null)
         {
-            var userInput = "";
-            var inputNullOrWhiteSpace = false;
-            var fileExists = false;
-            var extensionMatches = false;
-            var shown = false;
-            do
+            var attemptCount = 0;
+            while (maxRetries == null || attemptCount < maxRetries.Value)
             {
-                if (shown)
+                var userInput = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(userInput))
                 {
-                    var prompt = "";
-                    if (inputNullOrWhiteSpace)
+                    Console.WriteLine($"Empty path provided. Path to file cannot be empty{GetAttemptMessage(attemptCount, maxRetries)}.");
+                    ++attemptCount;
+                    continue;
+                }
+
+                try
+                {
+                    if (!Path.IsPathRooted(userInput))
                     {
-                        prompt = "Empty path provided. Path to file cannot be empty.";
-                    }
-                    else if (!fileExists)
-                    {
-                        prompt = $"Invalid file path provided. File {userInput} does not exist. Create the file or point to existing one.";
-                    }
-                    else
-                    {
-                        prompt = $"Wrong extension. Expected file of type {requiredFileExtension}. Point to the file of type {requiredFileExtension}.";
+                        userInput = Path.GetFullPath(userInput);
                     }
 
-                    Console.WriteLine(prompt);
-                }
-                userInput = Console.ReadLine();
-                inputNullOrWhiteSpace = string.IsNullOrWhiteSpace(userInput);
-                if (!inputNullOrWhiteSpace)
-                {
-                    fileExists = File.Exists(userInput);
-                    if (requiredFileExtension != null && fileExists)
-                        extensionMatches = userInput.EndsWith(requiredFileExtension,
-                            StringComparison.InvariantCultureIgnoreCase);
-                }
-                shown = true;
-            } while (inputNullOrWhiteSpace || !fileExists || (requiredFileExtension != null && !extensionMatches));
+                    if (!File.Exists(userInput))
+                    {
+                        Console.WriteLine($"Invalid file path provided. File {userInput} does not exist{GetAttemptMessage(attemptCount, maxRetries)}.");
+                        ++attemptCount;
+                        continue;
+                    }
 
-            return userInput;
+                    if (requiredFileExtension != null &&
+                        !string.Equals(Path.GetExtension(userInput), requiredFileExtension, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine($"Wrong extension. Expected file of type {requiredFileExtension}{GetAttemptMessage(attemptCount, maxRetries)}.");
+                        attemptCount++;
+                        continue;
+                    }
+
+                    return userInput;
+                }
+                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException)
+                {
+                    Console.WriteLine($"Error accessing the file: {ex.Message}{GetAttemptMessage(attemptCount, maxRetries)}.");
+                    attemptCount++;
+                }
+            }
+            throw new InvalidOperationException("Max retries reached. Unable to get valid file path.");
         }
 
-        public TimeSpan ShowSpinnerUntilConditionTrue(Func<bool> condition)
+        /// <summary>
+        /// Shows a spinner until a specified condition is true.
+        /// </summary>
+        /// <param name="condition">The condition to check.</param>
+        /// <param name="cancellationToken">Cancellation token for the operation.</param>
+        /// <returns>The elapsed time.</returns>
+        public TimeSpan ShowSpinnerUntilConditionTrue(Func<bool> condition, CancellationToken cancellationToken = default)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
 
             var watch = Stopwatch.StartNew();
             var i = 0;
             Console.CursorVisible = false;
-            while (condition.Invoke())
+            try
             {
-                ClearCurrentConsoleLine();
-                switch (i % 4)
+                while (!cancellationToken.IsCancellationRequested && condition.Invoke())
                 {
-                    case 0:
-                        Console.Write("[\\]");
-                        break;
-                    case 1:
-                        Console.Write("[|]");
-                        break;
-                    case 2:
-                        Console.Write("[/]");
-                        break;
-                    case 3:
-                        Console.Write("[-]");
-                        break;
-                    default:
-                        break;
+                    ClearCurrentConsoleLine();
+                    Console.Write($"[{SpinnerChars[i % SpinnerChars.Length]}]");
+                    Thread.Sleep(SpinnerDelay);
+                    i++;
                 }
-
-                Thread.Sleep(200);
-                ++i;
             }
-            watch.Stop();
-            ClearCurrentConsoleLine();
-            Console.CursorVisible = true;
+            finally
+            {
+                watch.Stop();
+                ClearCurrentConsoleLine();
+                Console.CursorVisible = true;
+            }
             return watch.Elapsed;
         }
 
+        /// <summary>
+        /// Shows a spinner until the specified task is running.
+        /// </summary>
+        /// <param name="task">The task to monitor.</param>
+        /// <returns>The elapsed time.</returns>
         public TimeSpan ShowSpinnerUntilTaskIsRunning(Task task)
         {
-            return ShowSpinnerUntilConditionTrue(() => !task.GetAwaiter().IsCompleted);
+            return ShowSpinnerUntilConditionTrue(() => !task.IsCompleted);
         }
 
+        /// <summary>
+        /// Shows a spinner until the specified task is running.
+        /// </summary>
+        /// <typeparam name="T">The type of the task result.</typeparam>
+        /// <param name="task">The task to monitor.</param>
+        /// <returns>The elapsed time.</returns>
         public TimeSpan ShowSpinnerUntilTaskIsRunning<T>(Task<T> task)
         {
-            return ShowSpinnerUntilConditionTrue(() => !task.GetAwaiter().IsCompleted);
+            return ShowSpinnerUntilConditionTrue(() => !task.IsCompleted);
         }
 
+        /// <summary>
+        /// Clears the current console line.
+        /// </summary>
         public void ClearCurrentConsoleLine()
         {
             var currentLineCursor = Console.CursorTop;
@@ -119,118 +153,286 @@ namespace ConsoleUserInteractionHelper
             Console.SetCursorPosition(0, currentLineCursor);
         }
 
-        public bool GetBinaryDecisionFromUser()
+        /// <summary>
+        /// Gets a binary decision from the user.
+        /// </summary>
+        /// <param name="yesKey">The key for 'Yes' (default is 'Y').</param>
+        /// <param name="noKey">The key for 'No' (default is 'N').</param>
+        /// <returns>True if the user chose 'Yes', false otherwise.</returns>
+        public bool GetBinaryDecisionFromUser(ConsoleKey yesKey = ConsoleKey.Y, ConsoleKey noKey = ConsoleKey.N)
         {
-            bool? response = null;
-            while (response == null)
+            Console.WriteLine($"Press '{yesKey}' for Yes or '{noKey}' for No.");
+            while (true)
             {
-                var key = Console.ReadKey();
-                switch (key.Key)
+                var key = Console.ReadKey(true).Key;
+                if (key == yesKey)
+                    return true;
+                if (key == noKey)
+                    return false;
+                Console.WriteLine($"Invalid key. Please press '{yesKey}' for Yes or '{noKey}' for No.");
+            }
+        }
+
+        /// <summary>
+        /// Gets an integer from the user within specified constraints.
+        /// </summary>
+        /// <param name="predicate">A function to validate the input. If null, accepts any integer.</param>
+        /// <param name="errorMessage">The error message to display for invalid input. If null, a generic message is used.</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>An integer that satisfies the specified predicate.</returns>
+        public int GetIntWithConstraints(Func<int, bool> predicate = null, string errorMessage = null, int? maxRetries = null)
+        {
+            predicate ??= _ => true;
+            errorMessage ??= "Invalid input. Please enter a valid integer.";
+
+            int attemptCount = 0;
+            while (maxRetries == null || attemptCount < maxRetries.Value)
+            {
+                if (int.TryParse(Console.ReadLine(), out int result) && predicate(result))
                 {
-                    case ConsoleKey.NumPad0:
-                    case ConsoleKey.N:
-                        response = false;
-                        break;
-                    case ConsoleKey.NumPad1:
-                    case ConsoleKey.Y:
-                        response = true;
-                        break;
-                    default:
-                        Console.WriteLine($"Only key 'Y' or 'N' are acceptable. Provided invalid key \"{key.Key}\"");
-                        break;
+                    return result;
                 }
+                Console.WriteLine($"{errorMessage}{GetAttemptMessage(attemptCount, maxRetries)}");
+                attemptCount++;
             }
-            return response.Value;
+            throw new InvalidOperationException($"Max retries reached. Unable to get valid integer input.");
         }
 
-        public int GetPositiveInt()
+        /// <summary>
+        /// Gets a double from the user within specified constraints.
+        /// </summary>
+        /// <param name="predicate">A function to validate the input. If null, accepts any double.</param>
+        /// <param name="errorMessage">The error message to display for invalid input. If null, a generic message is used.</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A double that satisfies the specified predicate.</returns>
+        public double GetDoubleWithConstraints(Func<double, bool> predicate = null, string errorMessage = null, int? maxRetries = null)
         {
-            var line = Console.ReadLine();
-            int validInteger;
-            while (!int.TryParse(line, out validInteger) && !(validInteger > 0))
+            predicate ??= _ => true;
+            errorMessage ??= "Invalid input. Please enter a valid number.";
+
+            int attemptCount = 0;
+            while (maxRetries == null || attemptCount < maxRetries.Value)
             {
-                Console.WriteLine(
-                    $"There was a problem with your input: {line} is not a valid integer in this context. Enter any natural number greater than 0.");
-                Console.Write("Number of messages: ");
-                line = Console.ReadLine();
+                if (double.TryParse(Console.ReadLine(), out double result) && predicate(result))
+                {
+                    return result;
+                }
+                Console.WriteLine($"{errorMessage}{GetAttemptMessage(attemptCount, maxRetries)}");
+                attemptCount++;
             }
-            return validInteger;
+            throw new InvalidOperationException($"Max retries reached. Unable to get valid number input.");
         }
 
-        public int GetNaturalInt()
+        /// <summary>
+        /// Gets a positive integer from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A positive integer entered by the user.</returns>
+        public int GetPositiveInt(int? maxRetries = null)
         {
-            return GetPositiveInt();
+            return GetIntWithConstraints(
+                n => n > 0,
+                "Invalid input. Please enter a positive integer greater than 0.",
+                maxRetries);
         }
 
-        public int GetInt()
+        /// <summary>
+        /// Gets a positive integer from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A positive integer entered by the user.</returns>
+        public int GetNaturalInt(int? maxRetries = null)
         {
-            var line = Console.ReadLine();
-            int validInteger;
-            while (!int.TryParse(line, out validInteger))
+            return GetIntWithConstraints(
+                n => n > 0,
+                "Invalid input. Please enter a positive integer greater than 0.",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets a negative integer from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A negative integer entered by the user.</returns>
+        public int GetNegativeInt(int? maxRetries = null)
+        {
+            return GetIntWithConstraints(
+                n => n < 0,
+                "Invalid input. Please enter a negative integer.",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets an integer from the user within a specified range.
+        /// </summary>
+        /// <param name="min">The minimum value of the range (inclusive).</param>
+        /// <param name="max">The maximum value of the range (inclusive).</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>An integer within the specified range entered by the user.</returns>
+        public int GetIntInRange(int min, int max, int? maxRetries = null)
+        {
+            return GetIntWithConstraints(
+                n => n >= min && n <= max,
+                $"Invalid input. Please enter an integer between {min} and {max} (inclusive).",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets an integer from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>An integer entered by the user.</returns>
+        public int GetInt(int? maxRetries = null)
+        {
+            return GetIntWithConstraints(
+                _ => true,  // Accept any integer
+                $"Invalid input. Please enter an integer in the range [{int.MinValue}, {int.MaxValue}].",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets a positive double from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A positive double entered by the user.</returns>
+        public double GetPositiveDouble(int? maxRetries = null)
+        {
+            return GetDoubleWithConstraints(
+                n => n > 0,
+                "Invalid input. Please enter a positive number greater than 0.",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets a negative double from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A negative double entered by the user.</returns>
+        public double GetNegativeDouble(int? maxRetries = null)
+        {
+            return GetDoubleWithConstraints(
+                n => n < 0,
+                "Invalid input. Please enter a negative number.",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets a double from the user within a specified range.
+        /// </summary>
+        /// <param name="min">The minimum value of the range (inclusive).</param>
+        /// <param name="max">The maximum value of the range (inclusive).</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A double within the specified range entered by the user.</returns>
+        public double GetDoubleInRange(double min, double max, int? maxRetries = null)
+        {
+            return GetDoubleWithConstraints(
+                n => n >= min && n <= max,
+                $"Invalid input. Please enter a number between {min} and {max} (inclusive).",
+                maxRetries);
+        }
+
+        /// <summary>
+        /// Gets a double from the user.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A double entered by the user.</returns>
+        public double GetDouble(int? maxRetries = null)
+        {
+            return GetDoubleWithConstraints(maxRetries: maxRetries);
+        }
+
+        /// <summary>
+        /// Gets a date from the user.
+        /// </summary>
+        /// <param name="format">The date format string (optional).</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A DateTime entered by the user.</returns>
+        public DateTime GetDateFromUser(string format = null, int? maxRetries = null)
+        {
+            var attemptCount = 0;
+            while (maxRetries == null || attemptCount < maxRetries.Value)
             {
-                Console.WriteLine(
-                    $"There was a problem with your input: {line} is not a valid integer in this context. Enter any natural number in range [{int.MinValue},{int.MaxValue}].");
-                Console.Write("Number of messages: ");
-                line = Console.ReadLine();
+                var input = Console.ReadLine();
+                if (format != null)
+                {
+                    if (DateTime.TryParseExact(input, format, null, System.Globalization.DateTimeStyles.None, out var result))
+                    {
+                        return result;
+                    }
+                }
+                else if (DateTime.TryParse(input, out var result))
+                {
+                    return result;
+                }
+                Console.WriteLine($"Invalid date format. Please enter a valid date{(format != null ? $" in the format {format}" : "")}{GetAttemptMessage(attemptCount, maxRetries)}.");
+                attemptCount++;
             }
-            return validInteger;
+            throw new InvalidOperationException("Max retries reached. Unable to get valid date.");
         }
 
-        public DateTime GetDateFromUser()
-        {
-            var line = Console.ReadLine();
-            DateTime result;
-            while (!DateTime.TryParse(line, out result))
-            {
-                Console.WriteLine(
-                    $"There was a problem with your input: {line} is not a valid Date in this context.");
-                line = Console.ReadLine();
-            }
-            return result;
-        }
-
+        /// <summary>
+        /// Gets a secure string from the user.
+        /// </summary>
+        /// <returns>A SecureString entered by the user.</returns>
         public SecureString GetSecureStringFromUser()
         {
             var result = new SecureString();
-            ConsoleKeyInfo key;
-            do
+            while (true)
             {
-                key = Console.ReadKey(true);
-
-                // Ignore any key out of range.
-                if (!Char.IsControl(key.KeyChar) && !Char.IsWhiteSpace(key.KeyChar))
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter)
+                    break;
+                if (key.Key == ConsoleKey.Backspace)
                 {
-                    // Append the character to the password.
+                    if (result.Length > 0)
+                    {
+                        result.RemoveAt(result.Length - 1);
+                        Console.Write("\b \b");
+                    }
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
                     result.AppendChar(key.KeyChar);
                     Console.Write("*");
                 }
-                // Exit if Enter key is pressed.
-            } while (key.Key != ConsoleKey.Enter);
+            }
             Console.WriteLine();
-
             return result;
         }
 
+        /// <summary>
+        /// Gets a secret string from the user.
+        /// </summary>
+        /// <returns>A string entered by the user without displaying it.</returns>
         public string GetSecretStringFromUser()
         {
             var result = new StringBuilder();
-            ConsoleKeyInfo key;
-            do
+            while (true)
             {
-                key = Console.ReadKey(true);
-
-                // Ignore any key out of range.
-                if (!Char.IsControl(key.KeyChar) && !Char.IsWhiteSpace(key.KeyChar))
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter)
+                    break;
+                if (key.Key == ConsoleKey.Backspace)
                 {
-                    // Append the character to the password.
+                    if (result.Length > 0)
+                    {
+                        result.Remove(result.Length - 1, 1);
+                        Console.Write("\b \b");
+                    }
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
                     result.Append(key.KeyChar);
                     Console.Write("*");
                 }
-                // Exit if Enter key is pressed.
-            } while (key.Key != ConsoleKey.Enter);
+            }
             Console.WriteLine();
-
             return result.ToString();
+        }
+
+        private string GetAttemptMessage(int attemptCount, int? maxRetries)
+        {
+            return maxRetries.HasValue ? $" (Attempt {attemptCount + 1}/{maxRetries})" : "";
         }
     }
 }

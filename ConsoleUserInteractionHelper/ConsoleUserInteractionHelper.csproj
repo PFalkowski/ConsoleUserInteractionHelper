@@ -10,9 +10,26 @@
     <RepositoryUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Console,Input-Output,helper</PackageTags>
-    <PackageReleaseNotes>Add custom progress bar message</PackageReleaseNotes>
-    <Description>Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser. Also, ShowSpinnerUntilConditionTrue to show spinner progress controll in console.</Description>
-    <Version>3.3.0</Version>
+    <PackageReleaseNotes>
+      # ConsoleUserInteractionHelper
+
+      ## Release Notes (v4.0.0)
+
+      This major update brings significant improvements and new features to enhance your console application development experience.
+
+      ### What's New
+
+      - **Generic Integer Input Method**: Introduced `GetIntWithConstraints` for flexible integer input handling.
+      - **Double Support**: Added `GetDoubleWithConstraints` and related methods for double value inputs.
+      - **Optional Max Retries**: All input methods now support an optional maximum retry limit.
+      - **Improved Error Handling**: Enhanced error messages and consistency across all methods.
+      - **Public Access to Generic Methods**: `GetIntWithConstraints` and `GetDoubleWithConstraints` are now public, allowing for custom constraints.
+
+      ### Breaking Changes
+
+      - Signature changes to existing methods to incorporate the optional `maxRetries` parameter.</PackageReleaseNotes>
+    <Description>ConsoleHelper is a versatile .NET library designed to simplify console-based user interactions in your applications. It provides a rich set of methods to handle various input scenarios, from simple string inputs to complex numeric constraints. Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser, ShowSpinnerUntilConditionTrue to show spinner progress controll in console and many others.</Description>
+    <Version>4.0.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
