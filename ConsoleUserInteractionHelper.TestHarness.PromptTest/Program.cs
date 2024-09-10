@@ -8,13 +8,18 @@ namespace ConsoleUserInteractionHelper.TestHarness.PromptTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("GetSecretStringFromUser");
             var helper = new ConsoleHelper();
             var secretString = helper.GetSecretStringFromUser();
             Console.WriteLine(secretString);
 
+            Console.WriteLine("GetSecureStringFromUser");
             var secureString = helper.GetSecureStringFromUser();
             Console.WriteLine(SecureStringToString(secureString));
+
+            Console.WriteLine("GetSecureStringFromUser");
+            var integerNatural = helper.GetNaturalInt();
+            Console.WriteLine(integerNatural);
         }
         private static string SecureStringToString(SecureString value) {
             IntPtr valuePtr = IntPtr.Zero;

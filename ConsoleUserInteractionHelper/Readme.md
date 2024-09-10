@@ -5,7 +5,7 @@ ConsoleHelper is a versatile .NET library designed to simplify console-based use
 ### Key Features
 
 - **Robust Input Handling**: Gracefully manage user inputs with built-in validation and error handling.
-- **Flexible Numeric Inputs**: Easily obtain integer and double values with custom constraints.
+- **Flexible Numeric Inputs**: Easily obtain integer values with custom constraints.
 - **Secure String Input**: Collect sensitive information without displaying it on the console.
 - **Progress Indication**: Display spinner animations for long-running operations.
 - **Customizable Retry Logic**: Control the number of retry attempts for each input operation.
@@ -39,9 +39,6 @@ string name = helper.GetNonEmptyStringFromUser();
 // Get a positive integer with max 3 retry attempts
 int age = helper.GetPositiveInt(maxRetries: 3);
 
-// Get a double within a specific range
-double score = helper.GetDoubleInRange(0.0, 100.0);
-
 // Use custom constraints for integer input
 int evenNumber = helper.GetIntWithConstraints(
     n => n % 2 == 0, 
@@ -61,7 +58,7 @@ string filePath = helper.GetPathToExistingFileFromUser(".txt");
 
 ### Extensibility
 
-ConsoleHelper is designed with extensibility in mind. You can easily create custom input methods using the generic `GetIntWithConstraints` and `GetDoubleWithConstraints` methods:
+ConsoleHelper is designed with extensibility in mind. You can easily create custom input methods using the generic `GetIntWithConstraints` method:
 
 ```csharp
 // Custom method to get a prime number
