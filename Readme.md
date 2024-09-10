@@ -1,6 +1,6 @@
 ﻿## Package Description
 
-ConsoleHelper is a versatile .NET library designed to simplify console-based user interactions in your applications. It provides a rich set of methods to handle various input scenarios, from simple string inputs to complex numeric constraints.
+ConsoleHelper is a versatile .NET library designed to simplify console-based user interactions. It provides a rich set of methods to handle various input scenarios, from simple string inputs to complex numeric constraints.
 
 ### Key Features
 
@@ -15,13 +15,13 @@ ConsoleHelper is a versatile .NET library designed to simplify console-based use
 Install ConsoleHelper via NuGet Package Manager:
 
 ```
-Install-Package ConsoleHelper
+Install-Package ConsoleUserInteractionHelper
 ```
 
 Or via .NET CLI:
 
 ```
-dotnet add package ConsoleHelper
+dotnet add package ConsoleUserInteractionHelper
 ```
 
 ### Usage Examples
@@ -29,7 +29,7 @@ dotnet add package ConsoleHelper
 Here are some examples to demonstrate the versatility of ConsoleHelper:
 
 ```csharp
-using ConsoleHelper;
+using ConsoleUserInteractionHelper;
 
 var helper = new ConsoleHelper();
 
