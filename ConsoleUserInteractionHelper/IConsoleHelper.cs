@@ -104,45 +104,6 @@ namespace ConsoleUserInteractionHelper
         /// <returns>An integer entered by the user.</returns>
         int GetInt(int? maxRetries = null);
 
-        ///// <summary>
-        ///// Gets a positive double from the user.
-        ///// </summary>
-        ///// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
-        ///// <returns>A positive double entered by the user.</returns>
-        //double GetPositiveDouble(int? maxRetries = null);
-
-        ///// <summary>
-        ///// Gets a negative double from the user.
-        ///// </summary>
-        ///// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
-        ///// <returns>A negative double entered by the user.</returns>
-        //double GetNegativeDouble(int? maxRetries = null);
-
-        ///// <summary>
-        ///// Gets a double from the user within a specified range.
-        ///// </summary>
-        ///// <param name="min">The minimum value of the range (inclusive).</param>
-        ///// <param name="max">The maximum value of the range (inclusive).</param>
-        ///// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
-        ///// <returns>A double within the specified range entered by the user.</returns>
-        //double GetDoubleInRange(double min, double max, int? maxRetries = null);
-
-        ///// <summary>
-        ///// Gets a double from the user.
-        ///// </summary>
-        ///// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
-        ///// <returns>A double entered by the user.</returns>
-        //double GetDouble(int? maxRetries = null);
-
-        ///// <summary>
-        ///// Gets a double from the user within specified constraints.
-        ///// </summary>
-        ///// <param name="predicate">A function to validate the input. If null, accepts any double.</param>
-        ///// <param name="errorMessage">The error message to display for invalid input. If null, a generic message is used.</param>
-        ///// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
-        ///// <returns>A double that satisfies the specified predicate.</returns>
-        //double GetDoubleWithConstraints(Func<double, bool> predicate = null, string errorMessage = null, int? maxRetries = null);
-
         /// <summary>
         /// Gets a date from the user.
         /// </summary>
