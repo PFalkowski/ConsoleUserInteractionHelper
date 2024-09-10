@@ -96,10 +96,34 @@ public class ConsoleHelperTests : IDisposable
     }
 
     [Fact]
+    public void GetNegativeInt_ValidInput_ReturnsInput()
+    {
+        var (_, _) = SetupConsoleIO("-5");
+        var result = _helper.GetNegativeInt();
+        Assert.Equal(-5, result);
+    }
+
+    [Fact]
     public void GetIntInRange_ValidInput_ReturnsInput()
     {
         var (_, _) = SetupConsoleIO("5");
         var result = _helper.GetIntInRange(1, 10);
+        Assert.Equal(5, result);
+    }
+
+    [Fact]
+    public void GetNonNegativeInt_ValidInput_ReturnsInput()
+    {
+        var (_, _) = SetupConsoleIO("0");
+        var result = _helper.GetNonNegativeInt();
+        Assert.Equal(0, result);
+    }
+
+    [Fact]
+    public void GetNaturalInt_ValidInput_ReturnsInput()
+    {
+        var (_, _) = SetupConsoleIO("5");
+        var result = _helper.GetNaturalInt();
         Assert.Equal(5, result);
     }
 
@@ -117,5 +141,38 @@ public class ConsoleHelperTests : IDisposable
     {
         var (_, _) = SetupConsoleIO("not a number\nnot a number\nnot a number");
         Assert.Throws<InvalidOperationException>(() => _helper.GetIntWithConstraints(maxRetries: 2));
+    }
+
+    [Fact]
+    public void GetInt_ValidInput_ReturnsInput()
+    {
+        var (_, _) = SetupConsoleIO("-42");
+        var result = _helper.GetInt();
+        Assert.Equal(-42, result);
+    }
+
+    [Fact]
+    public void GetDateFromUser_ValidInput_ReturnsDate()
+    {
+        var (_, _) = SetupConsoleIO("2023-05-15");
+        var result = _helper.GetDateFromUser();
+        Assert.Equal(new DateTime(2023, 5, 15), result);
+    }
+
+    [Fact]
+    public void GetDateFromUser_InvalidThenValidInput_ReturnsValidDate()
+    {
+        var (outputWriter, _) = SetupConsoleIO("not a date\n2023-05-15");
+        var result = _helper.GetDateFromUser();
+        Assert.Equal(new DateTime(2023, 5, 15), result);
+        Assert.Contains("Invalid date format", outputWriter.ToString());
+    }
+
+    [Fact]
+    public void GetDateFromUser_CustomFormat_ReturnsCorrectDate()
+    {
+        var (_, _) = SetupConsoleIO("15/05/2023");
+        var result = _helper.GetDateFromUser("dd/MM/yyyy");
+        Assert.Equal(new DateTime(2023, 5, 15), result);
     }
 }

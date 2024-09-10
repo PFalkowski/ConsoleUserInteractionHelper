@@ -172,11 +172,21 @@ namespace ConsoleUserInteractionHelper
         }
 
         /// <inheritdoc/>
+        [Obsolete("Obsolete due to ambiguity with 0. Use GetPositiveInt() if 0 shall be excluded, or ")]
         public int GetNaturalInt(int? maxRetries = null)
         {
             return GetIntWithConstraints(
                 n => n > 0,
                 "Invalid input. Please enter a positive integer greater than 0.",
+                maxRetries);
+        }
+        
+        /// <inheritdoc/>
+        public int GetNonNegativeInt(int? maxRetries = null)
+        {
+            return GetIntWithConstraints(
+                n => n >= 0,
+                "Invalid input. Please enter an integer greater than or equal to 0.",
                 maxRetries);
         }
 

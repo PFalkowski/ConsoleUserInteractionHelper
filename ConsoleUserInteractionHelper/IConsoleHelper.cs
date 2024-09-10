@@ -79,6 +79,7 @@ namespace ConsoleUserInteractionHelper
         /// </summary>
         /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
         /// <returns>A positive integer entered by the user.</returns>
+        [Obsolete("Obsolete due to ambiguity with 0. Use GetPositiveInt() if 0 shall be excluded, or ")]
         int GetNaturalInt(int? maxRetries = null);
 
         /// <summary>
@@ -87,6 +88,13 @@ namespace ConsoleUserInteractionHelper
         /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
         /// <returns>A negative integer entered by the user.</returns>
         int GetNegativeInt(int? maxRetries = null);
+
+        /// <summary>
+        /// Gets a non-negative integer from the user, i.e. positive integer or 0.
+        /// </summary>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>A negative integer entered by the user.</returns>
+        int GetNonNegativeInt(int? maxRetries = null);
 
         /// <summary>
         /// Gets an integer from the user within a specified range.
