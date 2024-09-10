@@ -53,6 +53,13 @@ public class ConsoleHelperTests : IDisposable
     }
 
     [Fact]
+    public void GetNonEmptyStringFromUser_MaxRetriesExceeded_ThrowsException()
+    {
+        var (_, _) = SetupConsoleIO("\n\n\n");
+        Assert.Throws<InvalidOperationException>(() => _helper.GetNonEmptyStringFromUser(maxRetries: 2));
+    }
+
+    [Fact]
     public void GetIntWithConstraints_ValidInput_ReturnsInput()
     {
         var (_, _) = SetupConsoleIO("42");
