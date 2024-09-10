@@ -5,11 +5,13 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUserInteractionHelper", "ConsoleUserInteractionHelper\ConsoleUserInteractionHelper.csproj", "{93CF32E3-A736-426F-83FB-B69CD6ADD204}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUserInteractionHelper.TestHarness", "ConsoleUserInteractionHelper.TestHarness\ConsoleUserInteractionHelper.TestHarness.csproj", "{2FD2EE6E-0E72-494A-8E76-A5EA53DF022A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUserInteractionHelper.TestHarness.ProgressBar", "ConsoleUserInteractionHelper.TestHarness\ConsoleUserInteractionHelper.TestHarness.ProgressBar.csproj", "{2FD2EE6E-0E72-494A-8E76-A5EA53DF022A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUserInteractionHelper.TestHarness.PromptTest", "ConsoleUserInteractionHelper.TestHarness.PromptTest\ConsoleUserInteractionHelper.TestHarness.PromptTest.csproj", "{3F510AB6-294D-4D15-AA3E-FAE8A9E6473D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUserInteractionHelper.Tests", "ConsoleUserInteractionHelper.Tests\ConsoleUserInteractionHelper.Tests.csproj", "{6AAC859B-0C10-4A13-9698-16180B5BE575}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUserInteractionHelper.Tests", "ConsoleUserInteractionHelper.Tests\ConsoleUserInteractionHelper.Tests.csproj", "{6AAC859B-0C10-4A13-9698-16180B5BE575}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUserInteractionHelper.TestHarness.Spinner", "ConsoleUserInteractionHelper.TestHarness.Spinner\ConsoleUserInteractionHelper.TestHarness.Spinner.csproj", "{3D238DDA-1350-4477-8E12-7AA25A3483F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6AAC859B-0C10-4A13-9698-16180B5BE575}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AAC859B-0C10-4A13-9698-16180B5BE575}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AAC859B-0C10-4A13-9698-16180B5BE575}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D238DDA-1350-4477-8E12-7AA25A3483F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D238DDA-1350-4477-8E12-7AA25A3483F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D238DDA-1350-4477-8E12-7AA25A3483F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D238DDA-1350-4477-8E12-7AA25A3483F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
