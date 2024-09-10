@@ -84,7 +84,7 @@ private bool IsPrime(int number)
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details.
+We welcome contributions! Please see our [Contributing Guidelines](Contributing.md) for more details.
 
 ## License
 
