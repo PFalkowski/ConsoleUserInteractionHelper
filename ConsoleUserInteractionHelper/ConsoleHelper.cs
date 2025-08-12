@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ConsoleUserInteractionHelper
 {
@@ -293,6 +295,91 @@ namespace ConsoleUserInteractionHelper
             }
             Console.WriteLine();
             return result.ToString();
+        }
+
+        /// <inheritdoc/>
+        public T GetOptionValue<T>(IEnumerable<T> options, string prompt, int? maxRetries = null)
+        {
+            if (options == null || !options.Any())
+            {
+                throw new ArgumentException("Options cannot be null or empty.", nameof(options));
+            }
+
+            var attemptCount = 0;
+            while (maxRetries == null || attemptCount < maxRetries.Value)
+            {
+                Console.WriteLine(prompt);
+                for (var i = 0; i < options.Count(); i++)
+                {
+                    Console.WriteLine($"{i + 1}. {options.ElementAt(i)}");
+                }
+
+                Console.Write("Enter your choice: ");
+                var input = Console.ReadLine();
+
+                if (int.TryParse(input, out var choice) && choice > 0 && choice <= options.Count())
+                {
+                    return options.ElementAt(choice - 1);
+                }
+
+                Console.WriteLine($"Invalid choice. Please enter a number between 1 and {options.Count()}{GetAttemptMessage(attemptCount, maxRetries)}.");
+                attemptCount++;
+            }
+            throw new InvalidOperationException("Max retries reached. Unable to get valid option choice.");
+        }
+
+        /// <inheritdoc/>
+        public bool GetFlagValue(string[] args, string flag, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+        {
+            return args.Any(arg => string.Equals(arg, flag, stringComparison));
+        }
+
+        /// <inheritdoc/>
+        public T GetOptionValue<T>(string[] args, string option, T defaultValue = default, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+        {
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (string.Equals(args[i], option, stringComparison))
+                {
+                    try
+                    {
+                        if (typeof(T) == typeof(bool))
+                        {
+                            if (bool.TryParse(args[i + 1], out bool boolResult))
+                            {
+                                return (T)(object)boolResult;
+                            }
+                            else if (args[i + 1] == "1")
+                            {
+                                return (T)(object)true;
+                            }
+                            else if (args[i + 1] == "0")
+                            {
+                                return (T)(object)false;
+                            }
+                            else
+                            {
+                                return defaultValue;
+                            }
+                        }
+                        else
+                        {
+                            return (T)Convert.ChangeType(args[i + 1], typeof(T));
+                        }
+                    }
+                    catch (InvalidCastException)
+                    {
+                        // Conversion failed, return default value
+                        return defaultValue;
+                    }
+                    catch (FormatException)
+                    {
+                        // Conversion failed, return default value
+                        return defaultValue;
+                    }
+                }
+            }
+            return defaultValue;
         }
 
         private string GetAttemptMessage(int attemptCount, int? maxRetries)

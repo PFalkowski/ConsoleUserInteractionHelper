@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ConsoleUserInteractionHelper
 {
@@ -131,5 +132,35 @@ namespace ConsoleUserInteractionHelper
         /// </summary>
         /// <returns>A string entered by the user without displaying it.</returns>
         string GetSecretStringFromUser();
+
+        /// <summary>
+        /// Prompts the user to select an option from a list of choices.
+        /// </summary>
+        /// <typeparam name="T">The type of the options.</typeparam>
+        /// <param name="options">The list of options to choose from.</param>
+        /// <param name="prompt">The prompt message to display to the user.</param>
+        /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
+        /// <returns>The selected option.</returns>
+        T GetOptionValue<T>(IEnumerable<T> options, string prompt, int? maxRetries = null);
+
+        /// <summary>
+        /// Checks if a flag is present in the console arguments.
+        /// </summary>
+        /// <param name="flag">The flag to check for (e.g., "--verbose").</param>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="stringComparison">The string comparison type.</param>
+        /// <returns>True if the flag is present, false otherwise.</returns>
+        bool GetFlagValue(string[] args, string flag, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Gets the value of an option from the console arguments.
+        /// </summary>
+        /// <typeparam name="T">The type to convert the option value to.</typeparam>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="option">The option to retrieve the value for (e.g., "--file").</param>
+        /// <param name="defaultValue">The default value to return if the option is not found or conversion fails.</param>
+        /// <param name="stringComparison">The string comparison type.</param>
+        /// <returns>The value of the option converted to type T, or the default value if not found or conversion fails.</returns>
+        T GetOptionValue<T>(string[] args, string option, T defaultValue = default, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
     }
 }

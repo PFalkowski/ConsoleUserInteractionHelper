@@ -1,4 +1,6 @@
 using Xunit.Abstractions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleUserInteractionHelper.Tests;
 
@@ -181,5 +183,73 @@ public class ConsoleHelperTests : IDisposable
         var (_, _) = SetupConsoleIO("15/05/2023");
         var result = _helper.GetDateFromUser("dd/MM/yyyy");
         Assert.Equal(new DateTime(2023, 5, 15), result);
+    }
+
+    [Fact]
+    public void GetOptionValue_PocoType_ReturnsSelectedPoco()
+    {
+        var options = new List<TestPoco>
+        {
+            new TestPoco { Id = 1, Name = "Item A" },
+            new TestPoco { Id = 2, Name = "Item B" }
+        };
+        var (_, _) = SetupConsoleIO("1"); // Selects the first option (index 0)
+        var result = _helper.GetOptionValue(options, "Select an item:");
+        Assert.Equal(options[0], result);
+    }
+
+    [Fact]
+    public void GetOptionValue_DoubleType_ReturnsSelectedDouble()
+    {
+        var options = new List<double> { 1.1, 2.2, 3.3 };
+        var (_, _) = SetupConsoleIO("2"); // Selects the second option (index 1)
+        var result = _helper.GetOptionValue(options, "Select a double:");
+        Assert.Equal(options[1], result);
+    }
+
+    [Fact]
+    public void GetOptionValue_DecimalType_ReturnsSelectedDecimal()
+    {
+        var options = new List<decimal> { 10.0m, 20.0m, 30.0m };
+        var (_, _) = SetupConsoleIO("3"); // Selects the third option (index 2)
+        var result = _helper.GetOptionValue(options, "Select a decimal:");
+        Assert.Equal(options[2], result);
+    }
+
+    [Fact]
+    public void GetOptionValue_DateTimeType_ReturnsSelectedDateTime()
+    {
+        var options = new List<DateTime>
+        {
+            new DateTime(2023, 1, 1),
+            new DateTime(2023, 2, 2),
+            new DateTime(2023, 3, 3)
+        };
+        var (_, _) = SetupConsoleIO("1"); // Selects the first option (index 0)
+        var result = _helper.GetOptionValue(options, "Select a date:");
+        Assert.Equal(options[0], result);
+    }
+}
+
+public class TestPoco
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Id} - {Name}";
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is TestPoco poco &&
+               Id == poco.Id &&
+               Name == poco.Name;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id, Name);
     }
 }
