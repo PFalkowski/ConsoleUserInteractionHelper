@@ -1,91 +1,62 @@
-﻿## Package Description
+# ConsoleUserInteractionHelper
 
-ConsoleHelper is a versatile .NET library designed to simplify console-based user interactions. It provides a rich set of methods to handle various input scenarios, from simple string inputs to complex numeric constraints.
+[![CI](https://github.com/PFalkowski/ConsoleUserInteractionHelper/actions/workflows/ci.yml/badge.svg)](https://github.com/PFalkowski/ConsoleUserInteractionHelper/actions/workflows/ci.yml)
+[![NuGet version](https://img.shields.io/nuget/v/ConsoleUserInteractionHelper.svg)](https://www.nuget.org/packages/ConsoleUserInteractionHelper/)
+[![NuGet downloads](https://img.shields.io/nuget/dt/ConsoleUserInteractionHelper.svg)](https://www.nuget.org/packages/ConsoleUserInteractionHelper/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=PFalkowski_ConsoleUserInteractionHelper&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=PFalkowski_ConsoleUserInteractionHelper)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=PFalkowski_ConsoleUserInteractionHelper&metric=coverage)](https://sonarcloud.io/summary/new_code?id=PFalkowski_ConsoleUserInteractionHelper)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://choosealicense.com/licenses/mit/)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-yellow.svg)](https://www.buymeacoffee.com/piotrfalkowski)
 
-### Key Features
+A .NET library that simplifies console-based user interactions. All input methods support an optional `maxRetries` parameter — pass `null` (default) to retry indefinitely, or a positive integer to limit attempts.
 
-- **Robust Input Handling**: Gracefully manage user inputs with built-in validation and error handling.
-- **Flexible Numeric Inputs**: Easily obtain integer values with custom constraints.
-- **Secure String Input**: Collect sensitive information without displaying it on the console.
-- **Progress Indication**: Display spinner animations for long-running operations.
-- **Customizable Retry Logic**: Control the number of retry attempts for each input operation.
-
-### Installation
-
-Install ConsoleHelper via NuGet Package Manager:
-
-```
-Install-Package ConsoleUserInteractionHelper
-```
-
-Or via .NET CLI:
-
-```
-dotnet add package ConsoleUserInteractionHelper
-```
-
-### Usage Examples
-
-Here are some examples to demonstrate the versatility of ConsoleHelper:
+## Input helpers
 
 ```csharp
-using ConsoleUserInteractionHelper;
-
 var helper = new ConsoleHelper();
 
-// Get a non-empty string
-string name = helper.GetNonEmptyStringFromUser();
+// strings
+string name   = helper.GetNonEmptyStringFromUser(maxRetries: 3);
+string path   = helper.GetPathToExistingFileFromUser(".csv");
+string secret = helper.GetSecretStringFromUser();   // masked input
 
-// Get a positive integer with max 3 retry attempts
-int age = helper.GetPositiveInt(maxRetries: 3);
+// integers
+int positive = helper.GetPositiveInt();
+int any      = helper.GetInt();
+int inRange  = helper.GetIntInRange(1, 100);
+int custom   = helper.GetIntWithConstraints(n => n % 2 == 0, "Enter an even number");
 
-// Use custom constraints for integer input
-int evenNumber = helper.GetIntWithConstraints(
-    n => n % 2 == 0, 
-    "Please enter an even number."
-);
+// other
+DateTime date = helper.GetDateFromUser("dd/MM/yyyy");
+bool yes      = helper.GetBinaryDecisionFromUser();
 
-// Collect a password securely
-string password = helper.GetSecretStringFromUser();
-
-// Display a spinner during a long operation
-Task longRunningTask = SomeLongRunningOperation();
-helper.ShowSpinnerUntilTaskIsRunning(longRunningTask);
-
-// Get a file path with specific extension
-string filePath = helper.GetPathToExistingFileFromUser(".txt");
+// option picker
+var options = new List<string> { "Alpha", "Beta", "Gamma" };
+string picked = helper.GetOptionValue(options, "Select environment:");
 ```
 
-### Extensibility
-
-ConsoleHelper is designed with extensibility in mind. You can easily create custom input methods using the generic `GetIntWithConstraints` method:
+## Spinner
 
 ```csharp
-// Custom method to get a prime number
-public int GetPrimeNumber(int? maxRetries = null)
-{
-    return GetIntWithConstraints(
-        n => IsPrime(n),
-        "Please enter a prime number.",
-        maxRetries
-    );
-}
-
-private bool IsPrime(int number)
-{
-    if (number < 2) return false;
-    for (int i = 2; i <= Math.Sqrt(number); i++)
-    {
-        if (number % i == 0) return false;
-    }
-    return true;
-}
+TimeSpan elapsed = helper.ShowSpinnerUntilConditionTrue(() => !isReady);
+// or
+TimeSpan elapsed = helper.ShowSpinnerUntilTaskIsRunning(myTask);
 ```
 
-## Contributing
+## Progress bar
 
-We welcome contributions! Please see our [Contributing Guidelines](Contributing.md) for more details.
+`ConsoleProgressReporter` wraps `ProgressReporting.ProgressReporter` and renders a terminal progress bar via [Goblinfactory.Konsole](https://github.com/goblinfactory/konsole).
 
-## License
+```csharp
+var reporter = new ConsoleProgressReporter();
+reporter.Start(100);
+for (int i = 0; i <= 100; i++)
+    reporter.ReportProgress(i);
+```
 
-ConsoleHelper is released under the [MIT License](LICENSE).
+## CLI argument helpers
+
+```csharp
+bool verbose  = helper.GetFlagValue(args, "--verbose");
+string output = helper.GetOptionValue(args, "--output", defaultValue: "out.csv");
+```

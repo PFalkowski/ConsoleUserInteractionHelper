@@ -36,7 +36,7 @@ namespace ConsoleUserInteractionHelper
         }
 
         /// <inheritdoc/>
-        public string GetPathToExistingFileFromUser(string requiredFileExtension = null, int? maxRetries = null)
+        public string GetPathToExistingFileFromUser(string? requiredFileExtension = null, int? maxRetries = null)
         {
             var attemptCount = 0;
             while (maxRetries == null || attemptCount < maxRetries.Value)
@@ -146,7 +146,7 @@ namespace ConsoleUserInteractionHelper
         }
 
         /// <inheritdoc/>
-        public int GetIntWithConstraints(Func<int, bool> predicate = null, string errorMessage = null, int? maxRetries = null)
+        public int GetIntWithConstraints(Func<int, bool>? predicate = null, string? errorMessage = null, int? maxRetries = null)
         {
             predicate ??= _ => true;
             errorMessage ??= "Invalid input. Please enter a valid integer.";
@@ -220,7 +220,7 @@ namespace ConsoleUserInteractionHelper
         }
 
         /// <inheritdoc/>
-        public DateTime GetDateFromUser(string format = null, int? maxRetries = null)
+        public DateTime GetDateFromUser(string? format = null, int? maxRetries = null)
         {
             var attemptCount = 0;
             while (maxRetries == null || attemptCount < maxRetries.Value)
@@ -335,7 +335,7 @@ namespace ConsoleUserInteractionHelper
         }
 
         /// <inheritdoc/>
-        public T GetOptionValue<T>(string[] args, string option, T defaultValue = default, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+        public T? GetOptionValue<T>(string[] args, string option, T? defaultValue = default, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
         {
             for (int i = 0; i < args.Length - 1; i++)
             {
