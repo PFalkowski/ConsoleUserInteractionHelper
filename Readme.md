@@ -1,4 +1,4 @@
-# ConsoleUserInteractionHelper
+﻿# ConsoleUserInteractionHelper
 
 [![CI](https://github.com/PFalkowski/ConsoleUserInteractionHelper/actions/workflows/ci.yml/badge.svg)](https://github.com/PFalkowski/ConsoleUserInteractionHelper/actions/workflows/ci.yml)
 [![NuGet version](https://img.shields.io/nuget/v/ConsoleUserInteractionHelper.svg)](https://www.nuget.org/packages/ConsoleUserInteractionHelper/)
@@ -9,6 +9,12 @@
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-yellow.svg)](https://www.buymeacoffee.com/piotrfalkowski)
 
 A .NET library that simplifies console-based user interactions. All input methods support an optional `maxRetries` parameter — pass `null` (default) to retry indefinitely, or a positive integer to limit attempts.
+
+## Install
+
+```bash
+dotnet add package ConsoleUserInteractionHelper
+```
 
 ## Input helpers
 
