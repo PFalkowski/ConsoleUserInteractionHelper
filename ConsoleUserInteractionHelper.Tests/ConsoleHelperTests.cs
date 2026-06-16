@@ -234,14 +234,14 @@ public class ConsoleHelperTests : IDisposable
 public class TestPoco
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public override string ToString()
     {
         return $"{Id} - {Name}";
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is TestPoco poco &&
                Id == poco.Id &&

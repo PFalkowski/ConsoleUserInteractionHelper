@@ -21,7 +21,7 @@ namespace ConsoleUserInteractionHelper
         /// <param name="requiredFileExtension">The required file extension (optional).</param>
         /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
         /// <returns>A valid path to an existing file.</returns>
-        string GetPathToExistingFileFromUser(string requiredFileExtension = null, int? maxRetries = null);
+        string GetPathToExistingFileFromUser(string? requiredFileExtension = null, int? maxRetries = null);
 
         /// <summary>
         /// Shows a spinner until a specified condition is true.
@@ -66,7 +66,7 @@ namespace ConsoleUserInteractionHelper
         /// <param name="errorMessage">The error message to display for invalid input. If null, a generic message is used.</param>
         /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
         /// <returns>An integer that satisfies the specified predicate.</returns>
-        int GetIntWithConstraints(Func<int, bool> predicate = null, string errorMessage = null, int? maxRetries = null);
+        int GetIntWithConstraints(Func<int, bool>? predicate = null, string? errorMessage = null, int? maxRetries = null);
         
         /// <summary>
         /// Gets a positive integer from the user.
@@ -119,7 +119,7 @@ namespace ConsoleUserInteractionHelper
         /// <param name="format">The date format string (optional).</param>
         /// <param name="maxRetries">The maximum number of retries allowed. If null, retries indefinitely.</param>
         /// <returns>A DateTime entered by the user.</returns>
-        DateTime GetDateFromUser(string format = null, int? maxRetries = null);
+        DateTime GetDateFromUser(string? format = null, int? maxRetries = null);
 
         /// <summary>
         /// Gets a secure string from the user.
@@ -161,6 +161,6 @@ namespace ConsoleUserInteractionHelper
         /// <param name="defaultValue">The default value to return if the option is not found or conversion fails.</param>
         /// <param name="stringComparison">The string comparison type.</param>
         /// <returns>The value of the option converted to type T, or the default value if not found or conversion fails.</returns>
-        T GetOptionValue<T>(string[] args, string option, T defaultValue = default, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
+        T? GetOptionValue<T>(string[] args, string option, T? defaultValue = default, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase);
     }
 }

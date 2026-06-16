@@ -1,48 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>8.0</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Copyright>Piotr Falkowski © 2024</Copyright>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</PackageProjectUrl>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>ConsoleUserInteractionHelper</PackageId>
+    <Version>4.1.0</Version>
+    <Authors>Piotr Falkowski</Authors>
+    <Company>Piotr Falkowski</Company>
+    <Copyright>Piotr Falkowski © 2026</Copyright>
+    <Description>ConsoleHelper is a versatile .NET library designed to simplify console-based user interactions in your applications. It provides a rich set of methods to handle various input scenarios, from simple string inputs to complex numeric constraints. Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser, ShowSpinnerUntilConditionTrue to show spinner progress control in console and many others.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/PFalkowski/ConsoleUserInteractionHelper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Console,Input-Output,helper</PackageTags>
-    <PackageReleaseNotes>
-      # ConsoleUserInteractionHelper
-
-      ## Release Notes (v4.0.0)
-
-      This major update brings significant improvements and new features to enhance your console application development experience.
-
-      ### What's New
-
-      - **Generic Integer Input Method**: Introduced `GetIntWithConstraints` for flexible integer input handling.
-      - **Optional Max Retries**: All input methods now support an optional maximum retry limit.
-      - **Improved Error Handling**: Enhanced error messages and consistency across all methods.
-      ### Breaking Changes
-
-      - Signature changes to existing methods to incorporate the optional `maxRetries` parameter.</PackageReleaseNotes>
-    <Description>ConsoleHelper is a versatile .NET library designed to simplify console-based user interactions in your applications. It provides a rich set of methods to handle various input scenarios, from simple string inputs to complex numeric constraints. Prompt a user to GetNaturalInt, GetPathFromUser, GetBinaryDecisionFromUser, ShowSpinnerUntilConditionTrue to show spinner progress controll in console and many others.</Description>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
-    <Version>4.0.0</Version>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Goblinfactory.Konsole" Version="6.2.2" />
-    <PackageReference Include="ProgressReporting" Version="2.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\Readme.md" Pack="true" PackagePath=""/>
+    <None Include="..\Readme.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="ConsoleUserInteractionHelper.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Goblinfactory.Konsole" Version="6.2.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="ProgressReporting" Version="2.2.0" />
   </ItemGroup>
 
 </Project>
