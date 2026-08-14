@@ -229,6 +229,90 @@ public class ConsoleHelperTests : IDisposable
         var result = _helper.GetOptionValue(options, "Select a date:");
         Assert.Equal(options[0], result);
     }
+
+    // The cursor-based methods used to throw IOException ("The handle is invalid") whenever there was
+    // no console buffer to address - redirected stdout, a scheduled task, a CI step. Clearing a line
+    // and animating a spinner are decoration, so they now degrade instead of failing the caller.
+
+    [Fact]
+    public void ClearCurrentConsoleLine_WhenThereIsNoConsoleBuffer_DoesNotThrow()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+
+        var exception = Record.Exception(() => _helper.ClearCurrentConsoleLine());
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void ShowSpinnerUntilConditionTrue_WhenTheSpinnerCannotBeDrawn_StillPollsUntilConditionIsFalse()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+        var remainingPolls = 3;
+
+        var elapsed = _helper.ShowSpinnerUntilConditionTrue(() => remainingPolls-- > 0);
+
+        Assert.Equal(-1, remainingPolls);
+        Assert.True(elapsed > TimeSpan.Zero);
+    }
+
+    [Fact]
+    public void ShowSpinnerUntilTaskIsRunning_WhenTheSpinnerCannotBeDrawn_StillWaitsForTheTask()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+        var task = Task.Delay(TimeSpan.FromMilliseconds(300));
+
+        _helper.ShowSpinnerUntilTaskIsRunning(task);
+
+        Assert.True(task.IsCompleted);
+    }
+
+    [Fact]
+    public void ShowSpinnerUntilTaskIsRunning_GenericTask_WaitsForItsResult()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+        var task = Task.Delay(TimeSpan.FromMilliseconds(200)).ContinueWith(_ => 42);
+
+        _helper.ShowSpinnerUntilTaskIsRunning(task);
+
+        Assert.True(task.IsCompleted);
+        Assert.Equal(42, task.Result);
+    }
+
+    [Fact]
+    public void ShowSpinnerUntilConditionTrue_WhenTheHostCanDraw_AnimatesAndRestoresTheCursor()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+        var helper = new DrawableConsoleHelper();
+        var remainingPolls = 2;
+
+        helper.ShowSpinnerUntilConditionTrue(() => remainingPolls-- > 0);
+
+        Assert.Equal(new[] { '|', '/' }, helper.Frames);
+        Assert.Equal(new[] { false, true }, helper.CursorVisibility);
+        Assert.True(helper.LinesCleared > 0);
+    }
+
+    /// <summary>
+    /// A console-capable host, for a test process that has none. Overriding the three drawing members
+    /// is the only way to reach the spinner's animation path when stdout is a pipe.
+    /// </summary>
+    private sealed class DrawableConsoleHelper : ConsoleHelper
+    {
+        public List<char> Frames { get; } = new();
+
+        public List<bool> CursorVisibility { get; } = new();
+
+        public int LinesCleared { get; private set; }
+
+        protected override bool CanDrawOnConsole => true;
+
+        public override void ClearCurrentConsoleLine() => LinesCleared++;
+
+        protected override void SetCursorVisible(bool visible) => CursorVisibility.Add(visible);
+
+        protected override void WriteSpinnerFrame(char frame) => Frames.Add(frame);
+    }
 }
 
 public class TestPoco
