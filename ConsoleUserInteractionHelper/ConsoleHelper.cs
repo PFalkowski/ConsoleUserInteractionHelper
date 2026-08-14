@@ -89,10 +89,11 @@ namespace ConsoleUserInteractionHelper
 
             var watch = Stopwatch.StartNew();
             var i = 0;
-            // Drawing the spinner needs a console buffer, which a redirected or absent console does not
-            // have. Waiting for the condition is this method's contract; the animation is decoration,
-            // so a host that cannot be drawn on still gets the wait rather than an exception.
-            var canDraw = TrySetCursorVisible(false);
+            // Drawing needs a console buffer, which redirected output does not have. Waiting for the
+            // condition is this method's contract and the animation is only decoration, so a host that
+            // cannot be drawn on still gets the wait rather than an IOException.
+            var canDraw = CanDrawOnConsole;
+            if (canDraw) SetCursorVisible(false);
             try
             {
                 while (!cancellationToken.IsCancellationRequested && condition.Invoke())
@@ -100,7 +101,7 @@ namespace ConsoleUserInteractionHelper
                     if (canDraw)
                     {
                         ClearCurrentConsoleLine();
-                        Console.Write($"[{SpinnerChars[i % SpinnerChars.Length]}]");
+                        WriteSpinnerFrame(SpinnerChars[i % SpinnerChars.Length]);
                     }
                     Thread.Sleep(SpinnerDelay);
                     i++;
@@ -112,32 +113,28 @@ namespace ConsoleUserInteractionHelper
                 if (canDraw)
                 {
                     ClearCurrentConsoleLine();
-                    TrySetCursorVisible(true);
+                    SetCursorVisible(true);
                 }
             }
             return watch.Elapsed;
         }
 
         /// <summary>
-        /// Sets cursor visibility, reporting whether the host actually supports it. Returns false when
-        /// there is no console buffer to draw on, and on platforms where the property is unsupported.
+        /// Whether this host has a console buffer that cursor positioning and the spinner can address.
+        /// Overridable so the drawing path can be exercised where no real console exists.
         /// </summary>
-        private static bool TrySetCursorVisible(bool visible)
-        {
-            try
-            {
-                Console.CursorVisible = visible;
-                return true;
-            }
-            catch (IOException)
-            {
-                return false;
-            }
-            catch (PlatformNotSupportedException)
-            {
-                return false;
-            }
-        }
+        protected virtual bool CanDrawOnConsole => !Console.IsOutputRedirected;
+
+        /// <summary>
+        /// Shows or hides the cursor. Overridable for the same reason as <see cref="CanDrawOnConsole"/>.
+        /// </summary>
+        protected virtual void SetCursorVisible(bool visible) => Console.CursorVisible = visible;
+
+        /// <summary>
+        /// Draws one spinner frame on the line just cleared. Overridable for the same reason as
+        /// <see cref="CanDrawOnConsole"/>.
+        /// </summary>
+        protected virtual void WriteSpinnerFrame(char frame) => Console.Write($"[{frame}]");
 
         /// <inheritdoc/>
         public TimeSpan ShowSpinnerUntilTaskIsRunning(Task task)
@@ -152,21 +149,16 @@ namespace ConsoleUserInteractionHelper
         }
 
         /// <inheritdoc/>
-        public void ClearCurrentConsoleLine()
+        public virtual void ClearCurrentConsoleLine()
         {
-            try
-            {
-                var currentLineCursor = Console.CursorTop;
-                Console.SetCursorPosition(0, Console.CursorTop);
-                Console.Write(new string(' ', Console.BufferWidth));
-                Console.SetCursorPosition(0, currentLineCursor);
-            }
-            catch (IOException)
-            {
-                // No console buffer to address - output redirected to a file or pipe, or no console
-                // attached at all. Clearing a line is purely cosmetic, so degrade to doing nothing
-                // rather than failing a caller that only wanted tidy output.
-            }
+            // No console buffer to address - output redirected to a file or a pipe. Clearing a line is
+            // purely cosmetic, so degrade to doing nothing rather than throwing IOException at a caller
+            // that only wanted tidy output.
+            if (!CanDrawOnConsole) return;
+            var currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(new string(' ', Console.BufferWidth));
+            Console.SetCursorPosition(0, currentLineCursor);
         }
 
         /// <inheritdoc/>
