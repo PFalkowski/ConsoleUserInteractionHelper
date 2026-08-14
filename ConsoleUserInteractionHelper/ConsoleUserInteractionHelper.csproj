@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>ConsoleUserInteractionHelper</PackageId>
-    <Version>4.1.0</Version>
+    <Version>4.2.0</Version>
     <Authors>Piotr Falkowski</Authors>
     <Company>Piotr Falkowski</Company>
     <Copyright>Piotr Falkowski © 2026</Copyright>

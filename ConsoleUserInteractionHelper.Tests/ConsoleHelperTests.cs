@@ -229,6 +229,43 @@ public class ConsoleHelperTests : IDisposable
         var result = _helper.GetOptionValue(options, "Select a date:");
         Assert.Equal(options[0], result);
     }
+
+    // The cursor-based methods used to throw IOException ("The handle is invalid") whenever there was
+    // no console buffer to address - redirected stdout, a scheduled task, a CI step. Clearing a line
+    // and animating a spinner are decoration, so they now degrade instead of failing the caller.
+
+    [Fact]
+    public void ClearCurrentConsoleLine_WhenThereIsNoConsoleBuffer_DoesNotThrow()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+
+        var exception = Record.Exception(() => _helper.ClearCurrentConsoleLine());
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void ShowSpinnerUntilConditionTrue_WhenTheSpinnerCannotBeDrawn_StillPollsUntilConditionIsFalse()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+        var remainingPolls = 3;
+
+        var elapsed = _helper.ShowSpinnerUntilConditionTrue(() => remainingPolls-- > 0);
+
+        Assert.Equal(-1, remainingPolls);
+        Assert.True(elapsed > TimeSpan.Zero);
+    }
+
+    [Fact]
+    public void ShowSpinnerUntilTaskIsRunning_WhenTheSpinnerCannotBeDrawn_StillWaitsForTheTask()
+    {
+        var (_, _) = SetupConsoleIO(string.Empty);
+        var task = Task.Delay(TimeSpan.FromMilliseconds(300));
+
+        _helper.ShowSpinnerUntilTaskIsRunning(task);
+
+        Assert.True(task.IsCompleted);
+    }
 }
 
 public class TestPoco

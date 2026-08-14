@@ -89,13 +89,19 @@ namespace ConsoleUserInteractionHelper
 
             var watch = Stopwatch.StartNew();
             var i = 0;
-            Console.CursorVisible = false;
+            // Drawing the spinner needs a console buffer, which a redirected or absent console does not
+            // have. Waiting for the condition is this method's contract; the animation is decoration,
+            // so a host that cannot be drawn on still gets the wait rather than an exception.
+            var canDraw = TrySetCursorVisible(false);
             try
             {
                 while (!cancellationToken.IsCancellationRequested && condition.Invoke())
                 {
-                    ClearCurrentConsoleLine();
-                    Console.Write($"[{SpinnerChars[i % SpinnerChars.Length]}]");
+                    if (canDraw)
+                    {
+                        ClearCurrentConsoleLine();
+                        Console.Write($"[{SpinnerChars[i % SpinnerChars.Length]}]");
+                    }
                     Thread.Sleep(SpinnerDelay);
                     i++;
                 }
@@ -103,10 +109,34 @@ namespace ConsoleUserInteractionHelper
             finally
             {
                 watch.Stop();
-                ClearCurrentConsoleLine();
-                Console.CursorVisible = true;
+                if (canDraw)
+                {
+                    ClearCurrentConsoleLine();
+                    TrySetCursorVisible(true);
+                }
             }
             return watch.Elapsed;
+        }
+
+        /// <summary>
+        /// Sets cursor visibility, reporting whether the host actually supports it. Returns false when
+        /// there is no console buffer to draw on, and on platforms where the property is unsupported.
+        /// </summary>
+        private static bool TrySetCursorVisible(bool visible)
+        {
+            try
+            {
+                Console.CursorVisible = visible;
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (PlatformNotSupportedException)
+            {
+                return false;
+            }
         }
 
         /// <inheritdoc/>
@@ -124,10 +154,19 @@ namespace ConsoleUserInteractionHelper
         /// <inheritdoc/>
         public void ClearCurrentConsoleLine()
         {
-            var currentLineCursor = Console.CursorTop;
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string(' ', Console.BufferWidth));
-            Console.SetCursorPosition(0, currentLineCursor);
+            try
+            {
+                var currentLineCursor = Console.CursorTop;
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.Write(new string(' ', Console.BufferWidth));
+                Console.SetCursorPosition(0, currentLineCursor);
+            }
+            catch (IOException)
+            {
+                // No console buffer to address - output redirected to a file or pipe, or no console
+                // attached at all. Clearing a line is purely cosmetic, so degrade to doing nothing
+                // rather than failing a caller that only wanted tidy output.
+            }
         }
 
         /// <inheritdoc/>
